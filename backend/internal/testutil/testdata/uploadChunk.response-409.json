@@ -1,0 +1,8 @@
+{
+  "error": {
+    "code": "RANGE_MISMATCH",
+    "message": "Der Chunk beginnt nicht an der erwarteten Position.",
+    "retryable": true,
+    "details": { "expectedStart": 16777216, "receivedStart": 25165824 }
+  }
+}

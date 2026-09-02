@@ -1,0 +1,36 @@
+{
+  "items": [
+    {
+      "itemId": "itm_9a8b7c6d",
+      "hash": "5466fae56722d061d4d685bfee7b310f523ca684544cbf2cf03d9fffa53d810b",
+      "filename": "VID_20250817_143201.mp4",
+      "album": "Camera",
+      "year": 2025,
+      "month": 8,
+      "mediaType": "video",
+      "mimeType": "video/mp4",
+      "sizeBytes": 52428800,
+      "width": 3840,
+      "height": 2160,
+      "durationMs": 42000,
+      "capturedAtMs": 1755434921000,
+      "hasTranscode": true
+    },
+    {
+      "itemId": "itm_0f8e7d6c",
+      "hash": "53749f98dc21bb73c6028f7dc1e5a85d1df44230efa08d8c824a473865f29635",
+      "filename": "IMG_20250817_143500.jpg",
+      "album": "Camera",
+      "year": 2025,
+      "month": 8,
+      "mediaType": "image",
+      "mimeType": "image/jpeg",
+      "sizeBytes": 3145728,
+      "width": 4032,
+      "height": 3024,
+      "capturedAtMs": 1755435300000,
+      "hasTranscode": false
+    }
+  ],
+  "nextCursor": "MTc1NTQzNTMwMDAwMHxpdG1fMGY4ZTdkNmM="
+}

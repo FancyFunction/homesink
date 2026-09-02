@@ -1,0 +1,16 @@
+{
+  "results": [
+    {
+      "clientId": "c_8831",
+      "verdict": "resume",
+      "receivedBytes": 16777216
+    },
+    {
+      "clientId": "c_8832",
+      "verdict": "duplicate",
+      "itemId": "itm_0f8e7d6c",
+      "libraryPath": "Camera/2025/08/IMG_20250817_143500.jpg"
+    }
+  ],
+  "serverTimeMs": 1755434930000
+}

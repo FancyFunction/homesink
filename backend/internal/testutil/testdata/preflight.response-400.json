@@ -1,0 +1,8 @@
+{
+  "error": {
+    "code": "BATCH_TOO_LARGE",
+    "message": "Höchstens 500 Einträge pro Anfrage.",
+    "retryable": false,
+    "details": { "limit": 500, "received": 731 }
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "note": "200 OK. Body is image/webp binary. Fixture captures the caching contract headers.",
+  "headers": {
+    "Content-Type": "image/webp",
+    "ETag": "\"a059a2178a60626620de4d66c1201e16a992e247b25af7ca092ba834ebcfe44c-256\"",
+    "Cache-Control": "public, max-age=31536000, immutable"
+  }
+}

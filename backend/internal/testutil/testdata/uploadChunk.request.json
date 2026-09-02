@@ -1,0 +1,4 @@
+{
+  "note": "Request body is application/octet-stream (one chunk of raw bytes). Fixture captures the required framing header only.",
+  "headers": { "Content-Range": "bytes 16777216-25165823/52428800" }
+}

@@ -1,0 +1,8 @@
+{
+  "note": "200 OK. Full media body streamed. Content-Type comes from the item.",
+  "headers": {
+    "Content-Type": "video/mp4",
+    "Accept-Ranges": "bytes",
+    "Content-Length": "52428800"
+  }
+}

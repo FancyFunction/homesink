@@ -1,0 +1,7 @@
+{
+  "error": {
+    "code": "NOT_FOUND",
+    "message": "Auf dem Server ist kein APK veröffentlicht.",
+    "retryable": false
+  }
+}

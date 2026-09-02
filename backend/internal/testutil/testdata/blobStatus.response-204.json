@@ -1,0 +1,4 @@
+{
+  "note": "204 No Content. HEAD resume probe - the contract is the X-Homesink-Received header.",
+  "headers": { "X-Homesink-Received": "16777216" }
+}

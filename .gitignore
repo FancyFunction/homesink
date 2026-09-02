@@ -1,0 +1,7 @@
+# Client contract fixtures are generated from the backend tree by
+# scripts/sync-fixtures.sh (08-ROADMAP.md 5). Single source of truth lives in
+# backend/internal/testutil/testdata/.
+/client/app/src/test/resources/fixtures/
+
+# Go build output
+/contract/validate

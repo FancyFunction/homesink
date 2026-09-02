@@ -1,0 +1,7 @@
+{
+  "error": {
+    "code": "NOT_FOUND",
+    "message": "Für diesen Hash liegen keine Daten vor.",
+    "retryable": false
+  }
+}

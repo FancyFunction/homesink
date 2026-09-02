@@ -1,0 +1,8 @@
+{
+  "error": {
+    "code": "FILE_TOO_LARGE",
+    "message": "Die Datei überschreitet die maximal zulässige Größe.",
+    "retryable": false,
+    "details": { "maxBytes": 17179869184 }
+  }
+}

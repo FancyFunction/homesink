@@ -1,0 +1,8 @@
+{
+  "note": "206 Partial Content. Range request satisfied.",
+  "headers": {
+    "Content-Type": "video/mp4",
+    "Content-Range": "bytes 1000-2000/52428800",
+    "Content-Length": "1001"
+  }
+}

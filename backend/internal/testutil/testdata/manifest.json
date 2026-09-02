@@ -1,0 +1,171 @@
+{
+  "$comment": "WP-0 contract fixtures. One request + one response example per operation and status in docs/api/openapi.yaml. Both the Go contract tests and the client MockWebServer suite deserialise these exact bytes (02-API.md 7.4, 08-ROADMAP.md 5). 'kind' is 'json' (validated against the resolved OpenAPI schema) or 'headers' (binary/no-body response - existence and shape checked, schema skipped).",
+  "operations": [
+    {
+      "operationId": "pairDevice",
+      "method": "post",
+      "path": "/pair",
+      "request": { "file": "pairDevice.request.json", "kind": "json" },
+      "responses": [
+        { "status": "201", "file": "pairDevice.response-201.json", "kind": "json" },
+        { "status": "400", "file": "pairDevice.response-400.json", "kind": "json" },
+        { "status": "410", "file": "pairDevice.response-410.json", "kind": "json" },
+        { "status": "429", "file": "pairDevice.response-429.json", "kind": "json" }
+      ]
+    },
+    {
+      "operationId": "listDevices",
+      "method": "get",
+      "path": "/devices",
+      "responses": [
+        { "status": "200", "file": "listDevices.response-200.json", "kind": "json" }
+      ]
+    },
+    {
+      "operationId": "revokeDevice",
+      "method": "delete",
+      "path": "/devices/{deviceId}",
+      "responses": [
+        { "status": "204", "file": "revokeDevice.response-204.json", "kind": "headers" },
+        { "status": "404", "file": "revokeDevice.response-404.json", "kind": "json" }
+      ]
+    },
+    {
+      "operationId": "preflight",
+      "method": "post",
+      "path": "/preflight",
+      "request": { "file": "preflight.request.json", "kind": "json" },
+      "responses": [
+        { "status": "200", "file": "preflight.response-200.json", "kind": "json" },
+        { "status": "400", "file": "preflight.response-400.json", "kind": "json" },
+        { "status": "507", "file": "preflight.response-507.json", "kind": "json" }
+      ]
+    },
+    {
+      "operationId": "blobStatus",
+      "method": "head",
+      "path": "/blobs/{hash}",
+      "responses": [
+        { "status": "204", "file": "blobStatus.response-204.json", "kind": "headers" },
+        { "status": "404", "file": "blobStatus.response-404.json", "kind": "json" }
+      ]
+    },
+    {
+      "operationId": "uploadChunk",
+      "method": "put",
+      "path": "/blobs/{hash}",
+      "request": { "file": "uploadChunk.request.json", "kind": "headers" },
+      "responses": [
+        { "status": "204", "file": "uploadChunk.response-204.json", "kind": "headers" },
+        { "status": "409", "file": "uploadChunk.response-409.json", "kind": "json" },
+        { "status": "413", "file": "uploadChunk.response-413.json", "kind": "json" },
+        { "status": "507", "file": "uploadChunk.response-507.json", "kind": "json" }
+      ]
+    },
+    {
+      "operationId": "abortUpload",
+      "method": "delete",
+      "path": "/blobs/{hash}",
+      "responses": [
+        { "status": "204", "file": "abortUpload.response-204.json", "kind": "headers" }
+      ]
+    },
+    {
+      "operationId": "commitBlob",
+      "method": "post",
+      "path": "/blobs/{hash}/commit",
+      "request": { "file": "commitBlob.request.json", "kind": "json" },
+      "responses": [
+        { "status": "201", "file": "commitBlob.response-201.json", "kind": "json" },
+        { "status": "409", "file": "commitBlob.response-409.json", "kind": "json" }
+      ]
+    },
+    {
+      "operationId": "listAlbums",
+      "method": "get",
+      "path": "/library/albums",
+      "responses": [
+        { "status": "200", "file": "listAlbums.response-200.json", "kind": "json" }
+      ]
+    },
+    {
+      "operationId": "listPeriods",
+      "method": "get",
+      "path": "/library/albums/{album}/periods",
+      "responses": [
+        { "status": "200", "file": "listPeriods.response-200.json", "kind": "json" }
+      ]
+    },
+    {
+      "operationId": "listItems",
+      "method": "get",
+      "path": "/library/items",
+      "responses": [
+        { "status": "200", "file": "listItems.response-200.json", "kind": "json" },
+        { "status": "200", "file": "listItems.response-200-lastpage.json", "kind": "json" }
+      ]
+    },
+    {
+      "operationId": "getThumbnail",
+      "method": "get",
+      "path": "/thumbs/{hash}",
+      "responses": [
+        { "status": "200", "file": "getThumbnail.response-200.json", "kind": "headers" },
+        { "status": "202", "file": "getThumbnail.response-202.json", "kind": "headers" },
+        { "status": "404", "file": "getThumbnail.response-404.json", "kind": "json" }
+      ]
+    },
+    {
+      "operationId": "getMedia",
+      "method": "get",
+      "path": "/media/{itemId}",
+      "responses": [
+        { "status": "200", "file": "getMedia.response-200.json", "kind": "headers" },
+        { "status": "206", "file": "getMedia.response-206.json", "kind": "headers" },
+        { "status": "404", "file": "getMedia.response-404.json", "kind": "json" }
+      ]
+    },
+    {
+      "operationId": "getLatestApp",
+      "method": "get",
+      "path": "/app/latest",
+      "responses": [
+        { "status": "200", "file": "getLatestApp.response-200.json", "kind": "json" },
+        { "status": "404", "file": "getLatestApp.response-404.json", "kind": "json" }
+      ]
+    },
+    {
+      "operationId": "downloadApp",
+      "method": "get",
+      "path": "/app/download",
+      "responses": [
+        { "status": "200", "file": "downloadApp.response-200.json", "kind": "headers" }
+      ]
+    },
+    {
+      "operationId": "getSystemStatus",
+      "method": "get",
+      "path": "/system/status",
+      "responses": [
+        { "status": "200", "file": "getSystemStatus.response-200.json", "kind": "json" }
+      ]
+    },
+    {
+      "operationId": "getUpdateStatus",
+      "method": "get",
+      "path": "/system/update",
+      "responses": [
+        { "status": "200", "file": "getUpdateStatus.response-200.json", "kind": "json" }
+      ]
+    },
+    {
+      "operationId": "healthz",
+      "method": "get",
+      "path": "/healthz",
+      "responses": [
+        { "status": "200", "file": "healthz.response-200.json", "kind": "headers" },
+        { "status": "503", "file": "healthz.response-503.json", "kind": "headers" }
+      ]
+    }
+  ]
+}

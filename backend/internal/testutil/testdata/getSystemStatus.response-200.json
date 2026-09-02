@@ -1,0 +1,11 @@
+{
+  "serverVersion": "1.0.0",
+  "uptimeSec": 864000,
+  "itemCount": 13847,
+  "blobCount": 13102,
+  "libraryBytes": 512000000000,
+  "freeBytes": 1990000000000,
+  "jobsQueued": 4,
+  "jobsRunning": 2,
+  "jobsFailed": 0
+}

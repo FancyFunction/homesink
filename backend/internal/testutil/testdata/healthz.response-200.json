@@ -1,0 +1,5 @@
+{
+  "note": "200 OK. Body is text/plain \"ok\". Outside the /v1 prefix.",
+  "headers": { "Content-Type": "text/plain; charset=utf-8" },
+  "body": "ok"
+}

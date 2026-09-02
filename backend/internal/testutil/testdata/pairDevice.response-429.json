@@ -1,0 +1,8 @@
+{
+  "error": {
+    "code": "PAIRING_RATE_LIMITED",
+    "message": "Zu viele Fehlversuche. Bitte 15 Minuten warten.",
+    "retryable": true,
+    "retryAfterMs": 900000
+  }
+}

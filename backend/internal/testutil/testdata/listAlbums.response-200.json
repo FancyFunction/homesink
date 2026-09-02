@@ -1,0 +1,20 @@
+[
+  {
+    "album": "Camera",
+    "itemCount": 1284,
+    "sizeBytes": 41234567890,
+    "latestCapturedAtMs": 1755434921000,
+    "coverHash": "53749f98dc21bb73c6028f7dc1e5a85d1df44230efa08d8c824a473865f29635"
+  },
+  {
+    "album": "Screenshots",
+    "itemCount": 96,
+    "sizeBytes": 214748364,
+    "latestCapturedAtMs": 1755000000000
+  },
+  {
+    "album": "Unsortiert",
+    "itemCount": 3,
+    "sizeBytes": 8388608
+  }
+]

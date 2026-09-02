@@ -1,0 +1,7 @@
+{
+  "error": {
+    "code": "PAIRING_CODE_EXPIRED",
+    "message": "Der Kopplungscode ist abgelaufen. Bitte einen neuen Code anfordern.",
+    "retryable": false
+  }
+}

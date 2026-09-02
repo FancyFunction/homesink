@@ -1,0 +1,5 @@
+{
+  "note": "503 Service Unavailable. The podman auto-update rollback gate (D-35).",
+  "headers": { "Content-Type": "text/plain; charset=utf-8" },
+  "body": "db: read-only data dir"
+}

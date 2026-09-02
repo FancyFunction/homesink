@@ -1,0 +1,9 @@
+{
+  "versionCode": 15,
+  "versionName": "1.4.0",
+  "sha256": "a059a2178a60626620de4d66c1201e16a992e247b25af7ca092ba834ebcfe44c",
+  "sizeBytes": 27262976,
+  "minSdk": 26,
+  "releaseNotes": "Schnellere Synchronisierung und Fehlerbehebungen.",
+  "downloadUrl": "https://homesink.local:8443/v1/app/download"
+}

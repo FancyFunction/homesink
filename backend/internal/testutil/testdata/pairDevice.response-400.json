@@ -1,0 +1,7 @@
+{
+  "error": {
+    "code": "PAIRING_CODE_INVALID",
+    "message": "Der eingegebene Kopplungscode ist ungültig.",
+    "retryable": false
+  }
+}

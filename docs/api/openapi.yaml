@@ -23,6 +23,7 @@ paths:
   /pair:
     post:
       tags: [pairing]
+      operationId: pairDevice
       summary: Exchange a pairing code for a device token
       security: []
       requestBody:
@@ -37,6 +38,7 @@ paths:
   /devices:
     get:
       tags: [pairing]
+      operationId: listDevices
       summary: List paired devices
       responses:
         '200':
@@ -45,6 +47,7 @@ paths:
   /devices/{deviceId}:
     delete:
       tags: [pairing]
+      operationId: revokeDevice
       summary: Revoke a device token (idempotent)
       parameters: [ { name: deviceId, in: path, required: true, schema: { type: string } } ]
       responses: { '204': { description: Revoked }, '404': { $ref: '#/components/responses/Error' } }
@@ -52,6 +55,7 @@ paths:
   /preflight:
     post:
       tags: [ingest]
+      operationId: preflight
       summary: Batch duplicate-check and upload planning (idempotent)
       description: >
         Up to 500 items per call. A `duplicate` verdict creates the library item server-side
@@ -72,12 +76,14 @@ paths:
         schema: { type: string, pattern: '^[a-f0-9]{64}$' }
     head:
       tags: [ingest]
+      operationId: blobStatus
       summary: How many bytes the server already holds (resume probe, idempotent)
       responses:
         '204': { description: Known, headers: { X-Homesink-Received: { schema: { type: integer, format: int64 } } } }
         '404': { $ref: '#/components/responses/Error' }
     put:
       tags: [ingest]
+      operationId: uploadChunk
       summary: Append one chunk (idempotent per offset)
       parameters:
         - { name: Content-Range, in: header, required: true, schema: { type: string, example: 'bytes 0-8388607/52428800' } }
@@ -91,12 +97,14 @@ paths:
         '507': { $ref: '#/components/responses/Error' }
     delete:
       tags: [ingest]
+      operationId: abortUpload
       summary: Abort an in-flight upload and discard staged bytes
       responses: { '204': { description: Discarded } }
 
   /blobs/{hash}/commit:
     post:
       tags: [ingest]
+      operationId: commitBlob
       summary: Verify the uploaded hash and place the file in the library
       description: >
         Server re-hashes the staged file. On mismatch the staged file is deleted and 409 is
@@ -114,12 +122,14 @@ paths:
   /library/albums:
     get:
       tags: [library]
+      operationId: listAlbums
       summary: All albums with denormalised counts
       responses:
         '200': { description: OK, content: { application/json: { schema: { type: array, items: { $ref: '#/components/schemas/Album' } } } } }
   /library/albums/{album}/periods:
     get:
       tags: [library]
+      operationId: listPeriods
       summary: Year/month buckets inside one album
       parameters: [ { name: album, in: path, required: true, schema: { type: string } } ]
       responses:
@@ -127,6 +137,7 @@ paths:
   /library/items:
     get:
       tags: [library]
+      operationId: listItems
       summary: Keyset-paginated items, newest first
       parameters:
         - { name: album,  in: query, schema: { type: string } }
@@ -140,6 +151,7 @@ paths:
   /thumbs/{hash}:
     get:
       tags: [library]
+      operationId: getThumbnail
       summary: Content-addressed thumbnail (immutable, 1-year cache)
       parameters:
         - { name: hash, in: path, required: true, schema: { type: string, pattern: '^[a-f0-9]{64}$' } }
@@ -147,11 +159,12 @@ paths:
       responses:
         '200': { description: WebP, content: { image/webp: { schema: { type: string, format: binary } } } }
         '404': { $ref: '#/components/responses/Error' }
-        '202': { description: Not generated yet, retry after the Retry-After header }
+        '202': { description: 'Not generated yet; retry after the Retry-After header' }
 
   /media/{itemId}:
     get:
       tags: [library]
+      operationId: getMedia
       summary: Stream the media file (Range-capable)
       parameters:
         - { name: itemId, in: path, required: true, schema: { type: string } }
@@ -165,6 +178,7 @@ paths:
   /app/latest:
     get:
       tags: [app]
+      operationId: getLatestApp
       summary: Newest APK available on the server
       security: []
       responses:
@@ -173,6 +187,7 @@ paths:
   /app/download:
     get:
       tags: [app]
+      operationId: downloadApp
       summary: Download the newest APK (Range-capable)
       security: []
       responses:
@@ -181,15 +196,34 @@ paths:
   /system/status:
     get:
       tags: [system]
+      operationId: getSystemStatus
       summary: Library and job statistics
       responses:
         '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SystemStatus' } } } }
   /system/update:
     get:
       tags: [system]
+      operationId: getUpdateStatus
       summary: Server self-update state
       responses:
         '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/UpdateStatus' } } } }
+
+  /healthz:
+    servers:
+      - url: https://{host}:{port}
+        variables: { host: { default: homesink.local }, port: { default: "8443" } }
+    get:
+      tags: [system]
+      operationId: healthz
+      summary: Liveness/readiness probe and the podman auto-update rollback gate (D-35)
+      description: >
+        Outside the /v1 prefix. Returns 200 only when the DB is open, migrations have
+        applied and the library root is writable; a broken deploy must fail this so the
+        container runtime rolls back.
+      security: []
+      responses:
+        '200': { description: Healthy, content: { text/plain: { schema: { type: string, example: ok } } } }
+        '503': { description: Unhealthy, content: { text/plain: { schema: { type: string, example: "db: read-only data dir" } } } }
 
 components:
   securitySchemes:
@@ -235,7 +269,7 @@ components:
         deviceId:      { type: string }
         serverId:      { type: string }
         serverName:    { type: string }
-        tlsSpkiSha256: { type: string, description: base64 SHA-256 of the SPKI, for pinning }
+        tlsSpkiSha256: { type: string, description: 'base64 SHA-256 of the SPKI, for pinning' }
         serverTimeMs:  { type: integer, format: int64 }
     Device:
       type: object
@@ -253,7 +287,7 @@ components:
       type: object
       required: [clientId, hash, sizeBytes, filename, mimeType, album, capturedAtEpochMs, capturedAtOffsetMin, mediaType]
       properties:
-        clientId:            { type: string, description: opaque client correlation id, echoed back }
+        clientId:            { type: string, description: 'opaque client correlation id, echoed back' }
         hash:                { type: string, pattern: '^[a-f0-9]{64}$' }
         sizeBytes:           { type: integer, format: int64 }
         filename:            { type: string, maxLength: 255 }

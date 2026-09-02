@@ -1,0 +1,11 @@
+# Structural lint for the frozen wire contract (WP-0). The 'minimal' ruleset
+# checks that the document is well-formed OpenAPI 3.1 without imposing house
+# style; correctness of the fixtures is the job of contract/validate.
+extends:
+  - minimal
+rules:
+  no-unused-components: error
+  operation-operationId: error
+  operation-operationId-unique: error
+  path-params-defined: error
+  spec: error

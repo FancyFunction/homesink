@@ -1,0 +1,8 @@
+{
+  "error": {
+    "code": "INSUFFICIENT_STORAGE",
+    "message": "Auf dem Speicher ist nicht genügend Platz.",
+    "retryable": false,
+    "details": { "freeBytes": 1048576, "requiredBytes": 10737418240 }
+  }
+}

@@ -1,0 +1,63 @@
+name: contract
+
+# WP-0 / milestone M0: the wire contract is frozen first and both sides are
+# gated against it. openapi.yaml must validate, and one request/response fixture
+# must exist for every operation and status, each conforming to the schema.
+# The backend and client lanes run the SAME validator over the SAME bytes.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    paths:
+      - "docs/api/openapi.yaml"
+      - "backend/internal/testutil/testdata/**"
+      - "contract/**"
+      - "scripts/sync-fixtures.sh"
+      - ".github/workflows/contract.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  openapi-lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Lint openapi.yaml
+        run: npx --yes @redocly/cli@1 lint docs/api/openapi.yaml
+
+  backend-contract:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: contract/go.mod
+          cache-dependency-path: contract/go.sum
+      - name: Vet
+        working-directory: contract
+        run: go vet ./...
+      - name: Test
+        working-directory: contract
+        run: go test ./...
+      - name: Validate backend fixtures against the contract
+        working-directory: contract
+        run: go run ./cmd/validate -spec ../docs/api/openapi.yaml -fixtures ../backend/internal/testutil/testdata
+
+  client-contract:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: contract/go.mod
+          cache-dependency-path: contract/go.sum
+      - name: Sync shared fixtures into the client tree
+        run: scripts/sync-fixtures.sh
+      - name: Validate client fixtures against the contract
+        working-directory: contract
+        run: go run ./cmd/validate -spec ../docs/api/openapi.yaml -fixtures ../client/app/src/test/resources/fixtures

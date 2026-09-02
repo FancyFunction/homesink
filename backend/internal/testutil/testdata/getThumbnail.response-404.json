@@ -1,0 +1,7 @@
+{
+  "error": {
+    "code": "NOT_FOUND",
+    "message": "Kein Vorschaubild für diesen Hash.",
+    "retryable": false
+  }
+}

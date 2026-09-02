@@ -1,0 +1,16 @@
+[
+  {
+    "deviceId": "dev_7cq2m9x1",
+    "name": "Pixel 8",
+    "lastSeenMs": 1755434930000,
+    "appVersionCode": 14,
+    "current": true
+  },
+  {
+    "deviceId": "dev_3kf9p2r7",
+    "name": "Pixel Tablet",
+    "lastSeenMs": 1755100000000,
+    "appVersionCode": 13,
+    "current": false
+  }
+]

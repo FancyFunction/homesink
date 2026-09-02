@@ -1,0 +1,7 @@
+{
+  "error": {
+    "code": "INSUFFICIENT_STORAGE",
+    "message": "Auf dem Speicher ist nicht genügend Platz.",
+    "retryable": false
+  }
+}

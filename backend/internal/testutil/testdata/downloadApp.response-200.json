@@ -1,0 +1,8 @@
+{
+  "note": "200 OK. Body is the APK binary (application/vnd.android.package-archive), Range-capable.",
+  "headers": {
+    "Content-Type": "application/vnd.android.package-archive",
+    "Accept-Ranges": "bytes",
+    "Content-Length": "27262976"
+  }
+}

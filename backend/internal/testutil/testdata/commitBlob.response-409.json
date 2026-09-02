@@ -1,0 +1,11 @@
+{
+  "error": {
+    "code": "HASH_MISMATCH",
+    "message": "Die hochgeladene Datei stimmt nicht mit dem angegebenen Hash überein.",
+    "retryable": true,
+    "details": {
+      "expected": "5466fae56722d061d4d685bfee7b310f523ca684544cbf2cf03d9fffa53d810b",
+      "actual": "0000000000000000000000000000000000000000000000000000000000000000"
+    }
+  }
+}

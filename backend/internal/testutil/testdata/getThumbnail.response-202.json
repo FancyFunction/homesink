@@ -1,0 +1,4 @@
+{
+  "note": "202 Accepted. Thumbnail not generated yet; client shows a placeholder and retries.",
+  "headers": { "Retry-After": "2" }
+}
