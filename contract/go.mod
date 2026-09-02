@@ -1,4 +1,4 @@
-module github.com/christiankruse/homesink/contract
+module github.com/FancyFunction/homesink/contract
 
 go 1.25
 

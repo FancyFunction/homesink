@@ -10,7 +10,7 @@ work packages, and you must **not** edit files owned by another package (`08-ROA
 **Definition of done, for every package:** code compiles, `go vet ./...` clean, `golangci-lint` clean,
 unit tests pass, the listed acceptance criteria have a named test each, and no `TODO` remains.
 
-Module path: `github.com/christiankruse/homesink/backend` (adjust once open question ❓4 is answered).
+Module path: `github.com/FancyFunction/homesink/backend` (adjust once open question ❓4 is answered).
 
 ---
 

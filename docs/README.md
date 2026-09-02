@@ -16,6 +16,7 @@ health-gated auto-update.
 | [06-ALGORITHMS.md](06-ALGORITHMS.md) | Adaptive scheduling, selection defaults, media pipeline — fully specified |
 | [07-DEPLOYMENT.md](07-DEPLOYMENT.md) | Mint/Ubuntu analysis, quadlet, install flow, distribution |
 | [08-ROADMAP.md](08-ROADMAP.md) | Dependency graph, milestones, file ownership, risks |
+| [09-RUNBOOK.md](09-RUNBOOK.md) | **How to execute this plan** — setup, dispatching work packages, checkpoints |
 
 **Implementing a work package?** Read `00`, `01`, then your `WP-*` section and its dependencies.
 Do not read the other work packages, and do not edit files you do not own (`08 §4`).

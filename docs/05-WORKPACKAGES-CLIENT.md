@@ -5,7 +5,7 @@ listed dependencies, never edit another package's files (`08-ROADMAP.md §4`).
 
 **Stack.** Kotlin 2.0, Compose BOM (Material 3), Hilt, Room, WorkManager, OkHttp 4 + Retrofit 2 +
 kotlinx-serialization, Coil 3 (thumbnails), DataStore Preferences, `androidx.security` for the token.
-minSdk 26, targetSdk 35 (D-23). Single Gradle module `:app` (`00-ARCHITECTURE.md §4.1`).
+minSdk 26, targetSdk 36 (D-23). Single Gradle module `:app` (`00-ARCHITECTURE.md §4.1`).
 
 **Definition of done, every package:** compiles, `./gradlew lint` clean, unit tests pass, no hard-coded
 user-visible string, no `!!` on a nullable that can be null in production, acceptance criteria each

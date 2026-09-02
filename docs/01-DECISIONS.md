@@ -211,7 +211,7 @@ notification and defers until it is next opened. `WP-C10` owns this; it is the h
 | all | `ACCESS_MEDIA_LOCATION` (preserve GPS EXIF), `INTERNET`, `REQUEST_INSTALL_PACKAGES` |
 | 31+ opt-in | `MANAGE_MEDIA` |
 
-**Decision.** minSdk **26**, targetSdk **35**. Android 14's *partial* media access
+**Decision.** minSdk **26**, targetSdk **36**. Android 14's *partial* media access
 (`READ_MEDIA_VISUAL_USER_SELECTED`) is handled by detecting it and showing a persistent hint that
 Homesink can only see selected files — not by pretending the library is complete.
 **Why.** minSdk 26 covers >98% of devices and gives notification channels + `PackageInstaller` unconditionally.
