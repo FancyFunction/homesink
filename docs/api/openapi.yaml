@@ -1,0 +1,385 @@
+openapi: 3.1.0
+info:
+  title: Homesink API
+  version: "1.0.0"
+  description: >
+    Media ingest, library browsing and client distribution for Homesink.
+    Normative contract - see docs/02-API.md for flow narrative and
+    docs/01-DECISIONS.md for the reasoning behind each design choice.
+servers:
+  - url: https://{host}:{port}/v1
+    variables: { host: { default: homesink.local }, port: { default: "8443" } }
+
+security: [ { bearerAuth: [] } ]
+
+tags:
+  - { name: pairing }
+  - { name: ingest }
+  - { name: library }
+  - { name: app }
+  - { name: system }
+
+paths:
+  /pair:
+    post:
+      tags: [pairing]
+      summary: Exchange a pairing code for a device token
+      security: []
+      requestBody:
+        required: true
+        content: { application/json: { schema: { $ref: '#/components/schemas/PairRequest' } } }
+      responses:
+        '201': { description: Paired, content: { application/json: { schema: { $ref: '#/components/schemas/PairResponse' } } } }
+        '400': { $ref: '#/components/responses/Error' }
+        '410': { $ref: '#/components/responses/Error' }
+        '429': { $ref: '#/components/responses/Error' }
+
+  /devices:
+    get:
+      tags: [pairing]
+      summary: List paired devices
+      responses:
+        '200':
+          description: OK
+          content: { application/json: { schema: { type: array, items: { $ref: '#/components/schemas/Device' } } } }
+  /devices/{deviceId}:
+    delete:
+      tags: [pairing]
+      summary: Revoke a device token (idempotent)
+      parameters: [ { name: deviceId, in: path, required: true, schema: { type: string } } ]
+      responses: { '204': { description: Revoked }, '404': { $ref: '#/components/responses/Error' } }
+
+  /preflight:
+    post:
+      tags: [ingest]
+      summary: Batch duplicate-check and upload planning (idempotent)
+      description: >
+        Up to 500 items per call. A `duplicate` verdict creates the library item server-side
+        immediately and is a successful sync for that file (decision D-07).
+      requestBody:
+        required: true
+        content: { application/json: { schema: { $ref: '#/components/schemas/PreflightRequest' } } }
+      responses:
+        '200': { description: Verdicts, content: { application/json: { schema: { $ref: '#/components/schemas/PreflightResponse' } } } }
+        '400': { $ref: '#/components/responses/Error' }
+        '507': { $ref: '#/components/responses/Error' }
+
+  /blobs/{hash}:
+    parameters:
+      - name: hash
+        in: path
+        required: true
+        schema: { type: string, pattern: '^[a-f0-9]{64}$' }
+    head:
+      tags: [ingest]
+      summary: How many bytes the server already holds (resume probe, idempotent)
+      responses:
+        '204': { description: Known, headers: { X-Homesink-Received: { schema: { type: integer, format: int64 } } } }
+        '404': { $ref: '#/components/responses/Error' }
+    put:
+      tags: [ingest]
+      summary: Append one chunk (idempotent per offset)
+      parameters:
+        - { name: Content-Range, in: header, required: true, schema: { type: string, example: 'bytes 0-8388607/52428800' } }
+      requestBody:
+        required: true
+        content: { application/octet-stream: { schema: { type: string, format: binary } } }
+      responses:
+        '204': { description: Chunk stored, headers: { X-Homesink-Received: { schema: { type: integer, format: int64 } } } }
+        '409': { $ref: '#/components/responses/Error' }
+        '413': { $ref: '#/components/responses/Error' }
+        '507': { $ref: '#/components/responses/Error' }
+    delete:
+      tags: [ingest]
+      summary: Abort an in-flight upload and discard staged bytes
+      responses: { '204': { description: Discarded } }
+
+  /blobs/{hash}/commit:
+    post:
+      tags: [ingest]
+      summary: Verify the uploaded hash and place the file in the library
+      description: >
+        Server re-hashes the staged file. On mismatch the staged file is deleted and 409 is
+        returned (decision D-18). NOT idempotent in effect, but safe to retry - a repeat commit
+        of an already-stored blob returns the existing item.
+      parameters:
+        - { name: hash, in: path, required: true, schema: { type: string, pattern: '^[a-f0-9]{64}$' } }
+      requestBody:
+        required: true
+        content: { application/json: { schema: { $ref: '#/components/schemas/CommitRequest' } } }
+      responses:
+        '201': { description: Stored, content: { application/json: { schema: { $ref: '#/components/schemas/CommitResponse' } } } }
+        '409': { $ref: '#/components/responses/Error' }
+
+  /library/albums:
+    get:
+      tags: [library]
+      summary: All albums with denormalised counts
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { type: array, items: { $ref: '#/components/schemas/Album' } } } } }
+  /library/albums/{album}/periods:
+    get:
+      tags: [library]
+      summary: Year/month buckets inside one album
+      parameters: [ { name: album, in: path, required: true, schema: { type: string } } ]
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { type: array, items: { $ref: '#/components/schemas/Period' } } } } }
+  /library/items:
+    get:
+      tags: [library]
+      summary: Keyset-paginated items, newest first
+      parameters:
+        - { name: album,  in: query, schema: { type: string } }
+        - { name: year,   in: query, schema: { type: integer } }
+        - { name: month,  in: query, schema: { type: integer, minimum: 1, maximum: 12 } }
+        - { name: cursor, in: query, schema: { type: string }, description: opaque; from nextCursor }
+        - { name: limit,  in: query, schema: { type: integer, default: 100, maximum: 500 } }
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/ItemPage' } } } }
+
+  /thumbs/{hash}:
+    get:
+      tags: [library]
+      summary: Content-addressed thumbnail (immutable, 1-year cache)
+      parameters:
+        - { name: hash, in: path, required: true, schema: { type: string, pattern: '^[a-f0-9]{64}$' } }
+        - { name: s, in: query, schema: { type: integer, enum: [256, 1024], default: 256 } }
+      responses:
+        '200': { description: WebP, content: { image/webp: { schema: { type: string, format: binary } } } }
+        '404': { $ref: '#/components/responses/Error' }
+        '202': { description: Not generated yet, retry after the Retry-After header }
+
+  /media/{itemId}:
+    get:
+      tags: [library]
+      summary: Stream the media file (Range-capable)
+      parameters:
+        - { name: itemId, in: path, required: true, schema: { type: string } }
+        - { name: variant, in: query, schema: { type: string, enum: [original, optimized], default: optimized } }
+        - { name: Range, in: header, schema: { type: string } }
+      responses:
+        '200': { description: Full body }
+        '206': { description: Partial body }
+        '404': { $ref: '#/components/responses/Error' }
+
+  /app/latest:
+    get:
+      tags: [app]
+      summary: Newest APK available on the server
+      security: []
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/AppRelease' } } } }
+        '404': { $ref: '#/components/responses/Error' }
+  /app/download:
+    get:
+      tags: [app]
+      summary: Download the newest APK (Range-capable)
+      security: []
+      responses:
+        '200': { description: APK, content: { application/vnd.android.package-archive: { schema: { type: string, format: binary } } } }
+
+  /system/status:
+    get:
+      tags: [system]
+      summary: Library and job statistics
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SystemStatus' } } } }
+  /system/update:
+    get:
+      tags: [system]
+      summary: Server self-update state
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/UpdateStatus' } } } }
+
+components:
+  securitySchemes:
+    bearerAuth: { type: http, scheme: bearer, description: 'Device token from /pair, format hs_<43 base64url>' }
+
+  responses:
+    Error:
+      description: Error envelope
+      content: { application/json: { schema: { $ref: '#/components/schemas/ErrorEnvelope' } } }
+
+  schemas:
+    ErrorEnvelope:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: object
+          required: [code, message, retryable]
+          properties:
+            code:
+              type: string
+              enum: [UNAUTHORIZED, PAIRING_CODE_INVALID, PAIRING_CODE_EXPIRED, PAIRING_RATE_LIMITED,
+                     BATCH_TOO_LARGE, RANGE_MISMATCH, HASH_MISMATCH, UNSUPPORTED_MEDIA_TYPE,
+                     FILE_TOO_LARGE, INSUFFICIENT_STORAGE, NOT_FOUND, RATE_LIMITED, INTERNAL]
+            message:   { type: string }
+            retryable: { type: boolean }
+            retryAfterMs: { type: integer, format: int64 }
+            details:   { type: object, additionalProperties: true }
+
+    PairRequest:
+      type: object
+      required: [code, deviceName, platform, appVersionCode]
+      properties:
+        code:           { type: string, pattern: '^[0-9]{6}$' }
+        deviceName:     { type: string, maxLength: 64 }
+        platform:       { type: string, enum: [android] }
+        appVersionCode: { type: integer }
+    PairResponse:
+      type: object
+      required: [token, deviceId, serverId, serverName, tlsSpkiSha256, serverTimeMs]
+      properties:
+        token:         { type: string }
+        deviceId:      { type: string }
+        serverId:      { type: string }
+        serverName:    { type: string }
+        tlsSpkiSha256: { type: string, description: base64 SHA-256 of the SPKI, for pinning }
+        serverTimeMs:  { type: integer, format: int64 }
+    Device:
+      type: object
+      required: [deviceId, name, lastSeenMs, current]
+      properties:
+        deviceId:       { type: string }
+        name:           { type: string }
+        lastSeenMs:     { type: integer, format: int64 }
+        appVersionCode: { type: integer }
+        current:        { type: boolean, description: true for the calling device }
+
+    MediaType: { type: string, enum: [image, video, audio] }
+
+    PreflightItem:
+      type: object
+      required: [clientId, hash, sizeBytes, filename, mimeType, album, capturedAtEpochMs, capturedAtOffsetMin, mediaType]
+      properties:
+        clientId:            { type: string, description: opaque client correlation id, echoed back }
+        hash:                { type: string, pattern: '^[a-f0-9]{64}$' }
+        sizeBytes:           { type: integer, format: int64 }
+        filename:            { type: string, maxLength: 255 }
+        mimeType:            { type: string }
+        album:               { type: string, description: raw bucket name; server sanitises (D-10) }
+        capturedAtEpochMs:   { type: integer, format: int64 }
+        capturedAtOffsetMin: { type: integer, description: minutes east of UTC at capture time (D-11) }
+        mediaType:           { $ref: '#/components/schemas/MediaType' }
+        width:               { type: integer }
+        height:              { type: integer }
+        durationMs:          { type: integer, format: int64 }
+    PreflightRequest:
+      type: object
+      required: [items]
+      properties:
+        items: { type: array, minItems: 1, maxItems: 500, items: { $ref: '#/components/schemas/PreflightItem' } }
+    PreflightResult:
+      type: object
+      required: [clientId, verdict]
+      properties:
+        clientId:      { type: string }
+        verdict:       { type: string, enum: [upload, duplicate, resume, reject] }
+        receivedBytes: { type: integer, format: int64, description: present for resume }
+        itemId:        { type: string, description: present for duplicate }
+        libraryPath:   { type: string, description: present for duplicate }
+        code:          { type: string, description: present for reject }
+    PreflightResponse:
+      type: object
+      required: [results, serverTimeMs]
+      properties:
+        results:      { type: array, items: { $ref: '#/components/schemas/PreflightResult' } }
+        serverTimeMs: { type: integer, format: int64 }
+
+    CommitRequest:
+      type: object
+      required: [clientId, filename, album, mimeType, capturedAtEpochMs, capturedAtOffsetMin, mediaType]
+      properties:
+        clientId:            { type: string }
+        filename:            { type: string, maxLength: 255 }
+        album:               { type: string }
+        mimeType:            { type: string }
+        capturedAtEpochMs:   { type: integer, format: int64 }
+        capturedAtOffsetMin: { type: integer }
+        mediaType:           { $ref: '#/components/schemas/MediaType' }
+        width:               { type: integer }
+        height:              { type: integer }
+        durationMs:          { type: integer, format: int64 }
+    CommitResponse:
+      type: object
+      required: [itemId, libraryPath, deduplicated, transcodeQueued]
+      properties:
+        itemId:          { type: string }
+        libraryPath:     { type: string, description: path relative to the library root }
+        deduplicated:    { type: boolean }
+        transcodeQueued: { type: boolean }
+
+    Album:
+      type: object
+      required: [album, itemCount, sizeBytes]
+      properties:
+        album:              { type: string }
+        itemCount:          { type: integer }
+        sizeBytes:          { type: integer, format: int64 }
+        latestCapturedAtMs: { type: integer, format: int64 }
+        coverHash:          { type: string }
+    Period:
+      type: object
+      required: [year, month, itemCount, sizeBytes]
+      properties:
+        year:      { type: integer }
+        month:     { type: integer, minimum: 1, maximum: 12 }
+        itemCount: { type: integer }
+        sizeBytes: { type: integer, format: int64 }
+    Item:
+      type: object
+      required: [itemId, hash, filename, album, year, month, mediaType, mimeType, sizeBytes, capturedAtMs, hasTranscode]
+      properties:
+        itemId:       { type: string }
+        hash:         { type: string }
+        filename:     { type: string }
+        album:        { type: string }
+        year:         { type: integer }
+        month:        { type: integer }
+        mediaType:    { $ref: '#/components/schemas/MediaType' }
+        mimeType:     { type: string }
+        sizeBytes:    { type: integer, format: int64 }
+        width:        { type: integer }
+        height:       { type: integer }
+        durationMs:   { type: integer, format: int64 }
+        capturedAtMs: { type: integer, format: int64 }
+        hasTranscode: { type: boolean }
+    ItemPage:
+      type: object
+      required: [items]
+      properties:
+        items:      { type: array, items: { $ref: '#/components/schemas/Item' } }
+        nextCursor: { type: [string, 'null'] }
+
+    AppRelease:
+      type: object
+      required: [versionCode, versionName, sha256, sizeBytes, downloadUrl]
+      properties:
+        versionCode:  { type: integer }
+        versionName:  { type: string }
+        sha256:       { type: string, description: client MUST verify before install (D-34) }
+        sizeBytes:    { type: integer, format: int64 }
+        minSdk:       { type: integer }
+        releaseNotes: { type: string }
+        downloadUrl:  { type: string }
+
+    SystemStatus:
+      type: object
+      properties:
+        serverVersion: { type: string }
+        uptimeSec:     { type: integer }
+        itemCount:     { type: integer }
+        blobCount:     { type: integer }
+        libraryBytes:  { type: integer, format: int64 }
+        freeBytes:     { type: integer, format: int64 }
+        jobsQueued:    { type: integer }
+        jobsRunning:   { type: integer }
+        jobsFailed:    { type: integer }
+    UpdateStatus:
+      type: object
+      properties:
+        current:         { type: string }
+        latestAvailable: { type: string }
+        lastCheckMs:     { type: integer, format: int64 }
+        lastResult:      { type: string, enum: [up_to_date, updated, failed, rolled_back, disabled] }
