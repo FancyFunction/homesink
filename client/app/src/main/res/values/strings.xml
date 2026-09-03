@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  German base locale (D-37): this is values/, not values-de/, so the app is
+  correct on a device set to any language.
+
+  Keys are APPEND-ONLY (08-ROADMAP.md §4): add new keys at the end, never reword
+  or remove another package's key. The canonical wording for screens the
+  requirements name verbatim is fixed in 05-WORKPACKAGES-CLIENT.md §2; each work
+  package adds the keys it actually uses.
+-->
+<resources>
+    <string name="app_name">Homesink</string>
+
+    <!-- WP-C1 · bottom navigation labels (05-WORKPACKAGES-CLIENT.md §2) -->
+    <string name="nav_sync_list">Synchronisieren</string>
+    <string name="nav_browser">Sink</string>
+    <string name="nav_queue">Warteschlange</string>
+    <string name="nav_settings">Einstellungen</string>
+</resources>

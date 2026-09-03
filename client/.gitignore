@@ -1,0 +1,11 @@
+# Android / Gradle build outputs
+/.gradle/
+/build/
+/app/build/
+/captures/
+local.properties
+*.iml
+.idea/
+.kotlin/
+
+# Generated Room schemas live under app/schemas/ (WP-C2) and ARE committed.
