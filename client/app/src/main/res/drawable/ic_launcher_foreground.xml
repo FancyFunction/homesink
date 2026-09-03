@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Simple downward "sink" arrow into a tray, on the adaptive-icon safe zone. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M49,30h10v22h13L54,74 36,52h13z" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M34,78h40v8h-40z" />
+</vector>

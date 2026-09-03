@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- neutral-100; the dark override lives in values-night/colors.xml -->
+    <color name="window_background">#FAFBFC</color>
+    <color name="ic_launcher_background">#078BA1</color>
+</resources>
