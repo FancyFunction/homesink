@@ -140,6 +140,28 @@ empty by default.
 **Why.** The requirement says all pictures, videos and audio recordings. Silently dropping folders would
 lose data the user believed was backed up. Making it visible and opt-out respects both.
 
+### D-38 A second placement of one blob is a hardlink 🔶
+**Decision.** The first placement of a blob materialises the file, and `blobs.rel_path` records it as the
+canonical copy. Every further `items` row for the same blob — the same photo in two albums, or the same
+photo from two phones (D-06), including the `duplicate` verdict that creates an item with no transfer at
+all (D-07) — is a **hardlink** to that canonical file. `library.Place` creates it under a temporary name
+in `.homesink/staging/` and `rename(2)`s it into position, so a second placement is as atomic as the
+first. A `rename(2)` of the staged upload remains the ordinary commit path.
+**Why.** Principle 5 — the library is human-browsable — means the second album has to *contain* the photo:
+someone who plugs the drive into a laptop must find it under both names. Two alternatives were weighed
+and rejected. A record-only item would leave `Urlaub/2025/12/IMG_0001.jpg` in the database with nothing
+behind it, which contradicts invariant S6 and makes the browsable tree quietly incomplete. A byte-for-byte
+copy would be browsable but would defeat content addressing outright — one photo shared by four phones
+would cost four times the space, which is the opposite of D-16's efficiency goal. A hardlink is the only
+option that costs no bytes and still produces a real file.
+**Consequence.** `library/` and `.homesink/` must be one filesystem. That was already required for the
+atomic-rename property (§5), but it is now load-bearing for a second, independent reason. The sink
+filesystem must also support hardlinks: ext4, XFS and btrfs do; exFAT and FAT32 do not, so a drive
+formatted for Windows portability is not a valid sink. `07-DEPLOYMENT.md` does not yet state a filesystem
+requirement and should. Deleting one item's file frees no space while another item still links the same
+inode, so `homesinkd fsck` must reason about link counts rather than paths before it reports reclaimable
+bytes. `WP-B5` owns the implementation; `WP-B4` calls it for both the commit and the `duplicate` path.
+
 ---
 
 ## 4. The upload protocol
