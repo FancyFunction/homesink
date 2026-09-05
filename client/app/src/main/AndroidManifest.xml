@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <!-- WP-C5 · D-23: INTERNET is required on every SDK level; without it the
+         network layer cannot open a socket. Normal permission, no runtime grant. -->
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <application
         android:name=".HomesinkApp"
         android:allowBackup="true"
