@@ -18,6 +18,15 @@ import (
 )
 
 func main() {
+	// Subcommand dispatch. `homesinkd pair` prints a pairing code and exits
+	// (WP-B3); with no argument the daemon runs.
+	if len(os.Args) > 1 && os.Args[1] == pairCommand {
+		if err := runPair(context.Background(), os.Getenv, os.Stdout); err != nil {
+			fmt.Fprintln(os.Stderr, "homesinkd pair: "+err.Error())
+			os.Exit(1)
+		}
+		return
+	}
 	if err := run(os.Getenv, os.Stdout); err != nil {
 		fmt.Fprintln(os.Stderr, "homesinkd: "+err.Error())
 		os.Exit(1)

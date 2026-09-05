@@ -250,7 +250,9 @@ components:
                      FILE_TOO_LARGE, INSUFFICIENT_STORAGE, NOT_FOUND, RATE_LIMITED, INTERNAL]
             message:   { type: string }
             retryable: { type: boolean }
-            retryAfterMs: { type: integer, format: int64 }
+            # Every code-specific field lives in details, retryAfterMs included:
+            # core.Error carries exactly one bag of extras and the server has no
+            # second place to put them.
             details:   { type: object, additionalProperties: true }
 
     PairRequest:
