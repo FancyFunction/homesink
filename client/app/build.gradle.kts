@@ -63,6 +63,14 @@ android {
     }
 }
 
+// WP-C2 (08-ROADMAP.md §4: dependency additions go through WP-C1's build files):
+// export the Room schema to app/schemas/ per 03-DATA-MODEL.md §2, one JSON file
+// per database version, committed so a later migration can be tested against it.
+ksp {
+    arg("room.schemaLocation", "$projectDir/schemas")
+    arg("room.generateKotlin", "true")
+}
+
 // Unit tests run against the debug variant only. The Robolectric + Compose UI
 // tests need the debug-only `ui-test-manifest` (it contributes the host
 // ComponentActivity); there is nothing release-specific for WP-C1 to test.
@@ -127,6 +135,10 @@ dependencies {
 
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
+
+    implementation(libs.androidx.room.runtime)
+    implementation(libs.androidx.room.ktx)
+    ksp(libs.androidx.room.compiler)
 
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
